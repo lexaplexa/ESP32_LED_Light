@@ -33,6 +33,8 @@ style = """html{font-family: Helvetica; display:inline-block; margin: 0px auto; 
           .lightoff {background-color: gray; color: black;}"""
 
 def index(light_status):
+    settings = ujson.load(open("settings.json","r"))
+
     if light_status == "OFF":
         status = "ZHASNUTO"
         div_light = "lightoff"
@@ -40,9 +42,7 @@ def index(light_status):
         status = "ROŽNUTO"
         div_light = "lighton"
 
-    settings = ujson.load(open("settings.json","r"))
-
-    html = html_template
+    
     head = """
         <title>Světlo | """ + settings["Name"] + """</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
@@ -60,8 +60,10 @@ def index(light_status):
           <p><a href="/?led=on"><button class="button button_on">Rožni</button></a></p>
           <p><a href="/?led=off"><button class="button button_off">Zhasni</button></a></p>
         </div>
-        <p><a href="/settings"><button class="button button_settings">Nastavení</button></a></p>"""
+        <p><a href="/settings"><button class="button button_settings">Nastavení</button></a></p>
+        <p><a href="/connection"><button class="button button_settings">Spojení</button></a></p>"""
 
+    html = html_template
     html = html.replace("{head}",head)
     html = html.replace("{style}",style)
     html = html.replace("{body}",body)
@@ -72,7 +74,6 @@ def index(light_status):
 def settings():
     settings = ujson.load(open("settings.json","r"))
 
-    html = html_template
     head = """
         <title>Světlo | """ + settings["Name"] + """</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
@@ -117,9 +118,50 @@ def settings():
         document.getElementById("RiseSlider").oninput = function() {document.getElementById("RiseSliderVal").innerHTML = this.value;}
         document.getElementById("FallSlider").oninput = function() {document.getElementById("FallSliderVal").innerHTML = this.value;}"""
 
+    html = html_template
     html = html.replace("{head}",head)
     html = html.replace("{style}",style)
     html = html.replace("{body}",body)
     html = html.replace("{script}",script)
+
+    return html
+
+def connection():
+    settings = ujson.load(open("settings.json","r"))
+    connection = ujson.load(open("connection.json","r"))
+
+    head = """
+        <title>Světlo | """ + settings["Name"] + """</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <link rel="icon" href="data:,">"""
+    body = """
+        <a href="/"><div class="title">
+          <h1>Světlo | """ + settings["Name"] + """</h1> 
+        </div></a>
+        <form name="connection" action="/connection" method="post">
+          <div>
+            <p>Mód WIFI</p>
+            <select name="WifiMode" class="name">
+              <option value="AP">AP</option>
+              <option value="STATION">STATION</option>
+            </select>
+          </div>
+          <div>
+            <p>SSID</p>
+            <input name="ssid" type="Text" value=""" + str(connection["ssid"]) + """ class="name">
+          </div>
+          <div>
+            <p>Heslo</p>
+            <input name="password" type="password" class="name">
+          </div>
+          <br>
+          <input type="submit" value="Uložit" class="button button_settings">
+        </form>"""
+
+    html = html_template
+    html = html.replace("{head}",head)
+    html = html.replace("{style}",style)
+    html = html.replace("{body}",body)
+    html = html.replace("{script}","")
 
     return html

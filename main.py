@@ -33,6 +33,9 @@ while True:
 
         elif link == "/settings":
             httplib.SendResponse(client, "text/html", pages.settings())
+        
+        elif link == "/connection":
+            httplib.SendResponse(client, "text/html", pages.connection())
 
         else:
             httplib.SendError(client, 404,"Not found")
