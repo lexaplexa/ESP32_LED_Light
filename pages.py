@@ -19,7 +19,7 @@ html_template = """
 style = """html{background-color: black; font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
         a:link, a:visited, a:active, a:hover {text-decoration: none; color: white;}
         p{font-size: 1.5em;}
-        button {display: inline-block; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 1.5em; margin: 5px; cursor: pointer;}
+        button {display: inline-block; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-weight:bold; font-size: 1.5em; margin: 5px; cursor: pointer;}
         .on {background-color: orange;}
         .off {background-color: gray; color: black;}
         .settings {background-color: lightblue;}
