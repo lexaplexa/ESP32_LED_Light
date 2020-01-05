@@ -16,21 +16,23 @@ html_template = """
 </script>
 </html>"""
 
-style = """html{font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center; background-color: black;}
+style = """html{background-color: black; font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
         a:link, a:visited, a:active, a:hover {text-decoration: none; color: white;}
         p{font-size: 1.5em;}
-        .button{display: inline-block; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
-        .button_on{background-color: orange;}
-        .button_off{background-color: gray; color: black;}
-        .button_settings{background-color: lightblue;}
+        button {display: inline-block; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 1.5em; margin: 5px; cursor: pointer;}
+        .on {background-color: orange;}
+        .off {background-color: gray; color: black;}
+        .settings {background-color: lightblue;}
         input {text-align: center; font-size: 1.2em;}
         .slider {-webkit-appearance: none; width: 60%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none;}
         .name {width: 200px;}
         .timeout {width: 80px;}
+        .submit {background-color: lightblue; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 1.5em; margin: 5px; cursor: pointer;}
         div {background-color: #EAEAEA; border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto;}
         .title {background-color: green;}
         .lighton {background-color: orange; color: white;}
         .lightoff {background-color: gray; color: black;}
+        .buttons {display: flex; justify-content: center;}
         select {font-size: 1.2em; width: 200px;}"""
 
 def index(light_status):
@@ -57,12 +59,14 @@ def index(light_status):
     <div class= """ + div_light + """>
         <p><strong>""" + status + """</strong></p>
     </div>
-    <div>
-      <p><a href="/?led=on"><button class="button button_on">Rožni</button></a></p>
-      <p><a href="/?led=off"><button class="button button_off">Zhasni</button></a></p>
+    <div class="buttons">
+      <a href="/?led=on"><button class="on">Rožni</button></a>
+      <a href="/?led=off"><button class="off">Zhasni</button></a>
     </div>
-    <p><a href="/settings"><button class="button button_settings">Parametry</button></a></p>
-    <p><a href="/connection"><button class="button button_settings">Wifi</button></a></p>"""
+    <div class="buttons">
+      <a href="/settings"><button class="settings">Parametry</button></a>
+      <a href="/connection"><button class="settings">Wifi</button></a>
+    </div>"""
 
     html = html_template
     html = html.replace("{head}",head)
@@ -107,8 +111,9 @@ def settings():
         <p><span id="FallSliderVal"></span></p>
         <input id="FallSlider" name="Fall" type="range" min=1 max=20 value=""" + str(settings["Fall"]) + """ class="slider">
       </div>
-      <br>
-      <input type="submit" value="Uložit" class="button button_settings">
+      <div class="buttons">
+        <input type="submit" value="Uložit" class="submit">
+      </div>
     </form>"""
     script = """
     document.getElementById("MaxSliderVal").innerHTML = document.getElementById("MaxSlider").value;
@@ -162,8 +167,9 @@ def connection():
         <p>Heslo</p>
         <input name="password" type="password" class="name">
       </div>
-      <br>
-      <input type="submit" value="Uložit" class="button button_settings">
+      <div class="buttons">
+        <input type="submit" value="Uložit" class="submit">
+      </div>
     </form>"""
 
     html = html_template
