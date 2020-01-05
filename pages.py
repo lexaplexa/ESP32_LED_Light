@@ -18,22 +18,21 @@ html_template = """
 
 style = """html{background-color: black; font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
         a:link, a:visited, a:active, a:hover {text-decoration: none; color: white;}
-        p{font-size: 1.5em;}
-        button {display: inline-block; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-weight:bold; font-size: 1.5em; margin: 5px; cursor: pointer;}
+        button {display: inline-block; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-weight:bold; font-size: 1em; margin: 5px; cursor: pointer;}
         .on {background-color: orange;}
         .off {background-color: gray; color: black;}
         .settings {background-color: lightblue;}
-        input {text-align: center; font-size: 1.2em;}
+        input {text-align: center; font-size: 1em;}
         .slider {-webkit-appearance: none; width: 60%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none;}
         .name {width: 200px;}
         .timeout {width: 80px;}
-        .submit {background-color: lightblue; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 1.5em; margin: 5px; cursor: pointer;}
-        div {background-color: #EAEAEA; border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto;}
-        .title {background-color: green;}
+        .submit {background-color: lightblue; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; margin: 5px; cursor: pointer; font-weight:bold;}
+        div {background-color: #EAEAEA; border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto; font-size: 1.5em;}
+        .title {background-color: green; font-size: 1em;}
         .lighton {background-color: orange; color: white;}
         .lightoff {background-color: gray; color: black;}
         .buttons {display: flex; justify-content: center;}
-        select {font-size: 1.2em; width: 200px;}"""
+        select {font-size: 1em; width: 200px;}"""
 
 def index(light_status):
     settings = ujson.load(open("settings.json","r"))
@@ -89,25 +88,25 @@ def settings():
     </div></a>
     <form name="settings" action="/settings" method="post">
       <div>
-        <p>Jméno</p>
+        Jméno<br><br>
         <input id="Name" name="Name" type="Text" value=""" + str(settings["Name"]) + """ class="name">
       </div>
       <div>
-        <p>Automatické zhasnutí</p>
+        Automatické zhasnutí<br><br>
         <input id="Timeout" name="Timeout" type="Number" value=""" + str(settings["Timeout"]) + """ class="timeout"> minut
       </div>
       <div>
-        <p>Jas</p>
+        Jas
         <p><span id="MaxSliderVal"></span>%</p>
         <input id="MaxSlider" name="Max" type="range" min=1 max=100 value=""" + str(settings["Max"]) + """ class="slider">            
       </div>
       <div>
-        <p>Doba zapínání</p>
+        Doba zapínání
         <p><span id="RiseSliderVal"></span></p>
         <input id="RiseSlider" name="Rise" type="range" min=1 max=20 value=""" + str(settings["Rise"]) + """ class="slider">
       </div>
       <div>
-        <p>Doba vypínání</p>
+        Doba vypínání
         <p><span id="FallSliderVal"></span></p>
         <input id="FallSlider" name="Fall" type="range" min=1 max=20 value=""" + str(settings["Fall"]) + """ class="slider">
       </div>
@@ -153,18 +152,18 @@ def connection():
     </div></a>
     <form name="connection" action="/connection" method="post">
       <div>
-        <p>Mód WIFI</p>
+        Mód WIFI<br><br>
         <select name="WifiMode">
           <option value="AP" """ + sel_ap + """>AP</option>
           <option value="STATION" """ + sel_st + """>STATION</option>
         </select>
       </div>
       <div>
-        <p>SSID</p>
+        SSID<br><br>
         <input name="ssid" type="Text" value=""" + str(connection["ssid"]) + """ class="name">
       </div>
       <div>
-        <p>Heslo</p>
+        Heslo<br><br>
         <input name="password" type="password" class="name">
       </div>
       <div class="buttons">
