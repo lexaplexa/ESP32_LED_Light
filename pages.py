@@ -4,9 +4,9 @@ html_template = """
 <html>
 <head>
     {head}
-    <style>
-        {style}
-    </style>
+<style>
+    {style}
+</style>
 </head>
 <body>
     {body}
@@ -17,34 +17,35 @@ html_template = """
 </html>"""
 
 style = """html{background-color: black; font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
-        a:link, a:visited, a:active, a:hover {text-decoration: none; color: white;}
-        button {display: inline-block; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-weight:bold; font-size: 1em; margin: 5px; cursor: pointer;}
-        .on {background-color: orange;}
-        .off {background-color: gray; color: black;}
-        .settings {background-color: lightblue;}
-        input {text-align: center; font-size: 1em;}
-        .slider {-webkit-appearance: none; width: 60%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none;}
-        .name {width: 200px;}
-        .timeout {width: 80px;}
-        .submit {background-color: lightblue; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; margin: 5px; cursor: pointer; font-weight:bold;}
-        div {background-color: #EAEAEA; border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto; font-size: 1.5em;}
-        .title {background-color: green; font-size: 1em;}
-        .lighton {background-color: orange; color: white;}
-        .lightoff {background-color: gray; color: black;}
-        .buttons {display: flex; justify-content: center;}
-        select {font-size: 1em; width: 200px;}"""
+    a:link, a:visited, a:active, a:hover {text-decoration: none; color: white;}
+
+    button {display: inline-block; border: 1px; border-radius: 4px; border-style: solid; padding: 16px 40px; text-decoration: none; font-weight:bold; font-size: 1em; margin: 5px; cursor: pointer;}
+    .on {background-color: orange; color: white;}
+    .off {background-color: gray; color: black;}
+    .settings {background-color: lightblue; color: white;}
+
+    input {text-align: center; font-size: 1em;}
+    .slider {-webkit-appearance: none; width: 60%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none;}
+    .name {width: 200px;}
+    .timeout {width: 80px;}
+    .submit {background-color: lightblue; border: 1px; border-radius: 4px; border-style: solid; color: white; padding: 16px 40px; text-decoration: none; margin: 5px; cursor: pointer; font-weight:bold;}
+
+    div {background-color: #EAEAEA; border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto; font-size: 1.5em;}
+    .title {background-color: green; font-size: 1em;}
+    .lighton {background-color: orange; color: white;}
+    .lightoff {background-color: gray; color: black;}
+    .buttons {display: flex; justify-content: center;}
+    
+    select {font-size: 1em; width: 200px;}"""
 
 def index(light_status):
     settings = ujson.load(open("settings.json","r"))
 
     if light_status == "OFF":
-        status = "ZHASNUTO"
         div_light = "lightoff"
     else:
-        status = "ROŽNUTO"
         div_light = "lighton"
 
-    
     head = """
     <title>Světlo | """ + settings["Name"] + """</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
@@ -55,10 +56,7 @@ def index(light_status):
         <h1>Světlo | """ + settings["Name"] + """</h1>
       </div>
     </a>
-    <div class= """ + div_light + """>
-        <p><strong>""" + status + """</strong></p>
-    </div>
-    <div class="buttons">
+    <div class=""" + div_light + """>
       <a href="/?led=on"><button class="on">Rožni</button></a>
       <a href="/?led=off"><button class="off">Zhasni</button></a>
     </div>
