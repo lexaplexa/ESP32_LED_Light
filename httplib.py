@@ -1,16 +1,3 @@
-import usocket as socket
-import sys
-
-def CreateServer(port):
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        server.bind(('', port))
-    except:
-        print('# Bind failed. ')
-        sys.exit()
-    server.listen(5)
-    return server
-
 def GetRequest(client):
     # When no data received, raise exception
     client.settimeout(0.2)

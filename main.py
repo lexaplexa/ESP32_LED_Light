@@ -1,10 +1,19 @@
+import usocket
+import sys
 import httplib
 import light
 import pages
 import _thread
 import ujson
 
-server = httplib.CreateServer(80)
+# Create web server
+server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
+try:
+    server.bind(('', 80))
+except:
+    print('# Bind failed. ')
+    sys.exit()
+server.listen(5)
 
 while True:
     client, addr = server.accept()
