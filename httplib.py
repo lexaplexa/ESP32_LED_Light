@@ -1,22 +1,9 @@
-import usocket as socket
-import sys
-
-def CreateServer(port):
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        server.bind(('', port))
-    except:
-        print('# Bind failed. ')
-        sys.exit()
-    server.listen(5)
-    return server
-
 def GetRequest(client):
     # When no data received, raise exception
     client.settimeout(0.2)
 
     # Wait for data from client
-    data = client.recv(1024)
+    data = ConvertToUtf8(client.recv(1024))
     
     # Separate http header from body
     header = data.decode('utf-8').split("\r\n\r\n")[0]
@@ -40,3 +27,12 @@ def SendError(client, error_number, message):
     client.sendall(response)
     client.close()
     return
+
+def ConvertToUtf8(data):
+    # Convert UTF-8 characters to bytes
+    # Example: "%C3%BD" >> b'\xc3\xbd'
+    while(1):
+        pos = data.find(b'%')
+        if pos == -1:
+            return data
+        data = data[:pos]+bytes([int(data[pos+1:pos+3],16)])+data[pos+3:]
