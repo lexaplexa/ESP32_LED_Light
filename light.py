@@ -1,12 +1,11 @@
+import machine
 from machine import Pin, PWM
 import time
 import _thread
 import ujson
 
-on_running = False
-off_running = False
 status = "OFF"
-pwm_pin = PWM(Pin(2))
+pwm_pin = PWM(Pin(4))
 pwm_pin.freq(120)
 pwm_pin.duty(0)
 switch_pin = Pin(5, Pin.IN, Pin.PULL_UP)
@@ -22,37 +21,40 @@ def add(duty):
     value(value() + duty)
 
 def switch(p):
-    if pwm_pin.duty() == 0:
+    global status
+    # Pin interrupt disabled, because it caused a few more interrupts than expected
+    switch_pin.irq(None)
+
+    if status == "OFF":
         _thread.start_new_thread(on,())
     else:
         _thread.start_new_thread(off,())
+    
+    _thread.start_new_thread(switch_wait, ())
+
+def switch_wait():
+    time.sleep(0.1)
+    # Pin interrupt enabled after delay
+    switch_pin.irq(trigger=Pin.IRQ_FALLING, handler=switch)
 
 def on():
-    global on_running
-    global off_running
     global status
-
     status = "ON"
-    off_running = False
-    on_running = True
     _thread.start_new_thread(timeout,())        # Run timeout thread when light is put on
     settings = ujson.load(open("settings.json","r"))
+    print("Thread on | ID: " + str(_thread.get_ident()))
 
-    while (value() < (1023*settings["Max"]/100) and on_running == True):
+    while (value() < (1023*settings["Max"]/100) and status == "ON"):
         add(int(value()/settings["Rise"]/10)+1)
         time.sleep(0.01)
 
 def off():
-    global off_running
-    global on_running
     global status
-
     status = "OFF"
-    on_running = False
-    off_running = True
     settings = ujson.load(open("settings.json","r"))
+    print("Thread off | ID: " + str(_thread.get_ident()))
 
-    while (value() > 0 and off_running == True):
+    while (value() > 0 and status == "OFF"):
         add(-(int(value()/settings["Fall"]/10)+1))
         time.sleep(0.01)
 
@@ -62,6 +64,7 @@ def timeout():
     delay_ms = 0
 
     if settings["Timeout"] == 0: return
+    print("Thread timeout | ID: " + str(_thread.get_ident()))
 
     # Timeout is in minutes
     while delay_ms < (settings["Timeout"]*60*1000):
@@ -71,4 +74,5 @@ def timeout():
 
     _thread.start_new_thread(off,())
 
+# Enable pin interrupt after start
 switch_pin.irq(trigger=Pin.IRQ_FALLING, handler=switch)
