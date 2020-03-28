@@ -69,5 +69,18 @@ while True:
             settings_file.close()
             
             httplib.SendResponse(client, "text/html", pages.settings())
+        
+        elif link == "/connection":
+            # Split body to dictionary
+            body = body.split("&")
+            temp = []
+            for element in body: temp.extend(element.split("="))
+            connection = {temp[i]:temp[i+1] for i in range(0,len(temp),2)}
+            # Save to file
+            connection_file = open("connection.json","w")
+            ujson.dump(connection, connection_file)
+            connection_file.close()
+            
+            httplib.SendResponse(client, "text/html", pages.connection())
 
     client.close()
