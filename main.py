@@ -46,10 +46,25 @@ while True:
         elif link == "/connection":
             httplib.SendResponse(client, "text/html", pages.connection())
 
+        # API -------------------------------------------------------------------------------------
+        elif "/api/" in link:
+            api = link.split("/api/")[1]
+            if api == "ledon":
+                _thread.start_new_thread(light.on, ())
+                httplib.SendResponse(client, "application/json", """{"status":"ON"}""")
+            elif api == "ledoff":
+                _thread.start_new_thread(light.off, ())
+                httplib.SendResponse(client, "application/json", """{"status":"OFF"}""")
+            elif api == "status":
+                httplib.SendResponse(client, "application/json", "{{\"status\":\"{}\"}}".format(light.status))
+            elif api == "settings":
+                httplib.SendResponse(client, "application/json", open("settings.json","r").read())
+            else:
+                httplib.SendResponse(client, "application/json", """{"error":"not defined"}""")
+
         else:
             httplib.SendError(client, 404,"Not found")
-        pass
-    
+
     # POST method ---------------------------------------------------------------------------------
     elif method == "POST":
         if link == "/settings":
@@ -82,5 +97,13 @@ while True:
             connection_file.close()
             
             httplib.SendResponse(client, "text/html", pages.connection())
+
+        # API -------------------------------------------------------------------------------------
+        elif "/api/" in link:
+            api = link.split("/api/")[1]
+            httplib.SendResponse(client, "application/json", """{"error":"not defined"}""")
+        
+        else:
+            httplib.SendError(client, 404,"Not found")
 
     client.close()
