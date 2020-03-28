@@ -20,6 +20,7 @@ def GetRequest(client):
 def SendResponse(client, content_type, string):
     response = "HTTP/1.1 200 OK\nContent-Type: "+ content_type +"\nConnection: close\n\n" + string
     client.sendall(response)
+    client.close()
     return
 
 def SendError(client, error_number, message):
