@@ -7,9 +7,7 @@ import ujson
 status = "OFF"
 current_on = 0
 previous_on = 0
-pwm_pin = PWM(Pin(4))
-pwm_pin.freq(120)
-pwm_pin.duty(0)
+pwm_pin = PWM(Pin(4), freq=120, duty=0)
 switch_pin = Pin(5, Pin.IN, Pin.PULL_UP)
 
 def value(duty = None):
