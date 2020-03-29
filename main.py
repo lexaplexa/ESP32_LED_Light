@@ -5,6 +5,7 @@ import light
 import pages
 import _thread
 import ujson
+import time
 
 # Create web server
 server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
@@ -46,10 +47,29 @@ while True:
         elif link == "/connection":
             httplib.SendResponse(client, "text/html", pages.connection())
 
+        # API -------------------------------------------------------------------------------------
+        elif "/api/" in link:
+            api = link.split("/api/")[1]
+            if api == "ledon":
+                _thread.start_new_thread(light.on, ())
+                httplib.SendResponse(client, "application/json", """{"status":"ON"}""")
+            elif api == "ledoff":
+                _thread.start_new_thread(light.off, ())
+                httplib.SendResponse(client, "application/json", """{"status":"OFF"}""")
+            elif api == "status":
+                httplib.SendResponse(client, "application/json", 
+                    "{{\"status\":\"{}\",\"previous_on\":{}, \"current_on\":{}}}".format(
+                        light.status,
+                        light.previous_on,
+                        int(time.time() - light.current_on) if light.current_on > 0 else 0))
+            elif api == "settings":
+                httplib.SendResponse(client, "application/json", open("settings.json","r").read())
+            else:
+                httplib.SendResponse(client, "application/json", """{"error":"not defined"}""")
+
         else:
             httplib.SendError(client, 404,"Not found")
-        pass
-    
+
     # POST method ---------------------------------------------------------------------------------
     elif method == "POST":
         if link == "/settings":
@@ -69,5 +89,26 @@ while True:
             settings_file.close()
             
             httplib.SendResponse(client, "text/html", pages.settings())
+        
+        elif link == "/connection":
+            # Split body to dictionary
+            body = body.split("&")
+            temp = []
+            for element in body: temp.extend(element.split("="))
+            connection = {temp[i]:temp[i+1] for i in range(0,len(temp),2)}
+            # Save to file
+            connection_file = open("connection.json","w")
+            ujson.dump(connection, connection_file)
+            connection_file.close()
+            
+            httplib.SendResponse(client, "text/html", pages.connection())
+
+        # API -------------------------------------------------------------------------------------
+        elif "/api/" in link:
+            api = link.split("/api/")[1]
+            httplib.SendResponse(client, "application/json", """{"error":"not defined"}""")
+        
+        else:
+            httplib.SendError(client, 404,"Not found")
 
     client.close()
