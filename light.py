@@ -5,6 +5,8 @@ import _thread
 import ujson
 
 status = "OFF"
+current_on = 0
+previous_on = 0
 pwm_pin = PWM(Pin(4))
 pwm_pin.freq(120)
 pwm_pin.duty(0)
@@ -39,7 +41,9 @@ def switch_wait():
 
 def on():
     global status
+    global current_on
     status = "ON"
+    current_on = time.time()
     _thread.start_new_thread(timeout,())        # Run timeout thread when light is put on
     settings = ujson.load(open("settings.json","r"))
     print("Thread on | ID: " + str(_thread.get_ident()))
@@ -50,7 +54,11 @@ def on():
 
 def off():
     global status
+    global current_on
+    global previous_on
     status = "OFF"
+    previous_on += int(time.time() - current_on)
+    current_on = 0
     settings = ujson.load(open("settings.json","r"))
     print("Thread off | ID: " + str(_thread.get_ident()))
 

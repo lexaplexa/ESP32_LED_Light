@@ -5,6 +5,7 @@ import light
 import pages
 import _thread
 import ujson
+import time
 
 # Create web server
 server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
@@ -56,7 +57,11 @@ while True:
                 _thread.start_new_thread(light.off, ())
                 httplib.SendResponse(client, "application/json", """{"status":"OFF"}""")
             elif api == "status":
-                httplib.SendResponse(client, "application/json", "{{\"status\":\"{}\"}}".format(light.status))
+                httplib.SendResponse(client, "application/json", 
+                    "{{\"status\":\"{}\",\"previous_on\":{}, \"current_on\":{}}}".format(
+                        light.status,
+                        light.previous_on,
+                        int(time.time() - light.current_on) if light.current_on > 0 else 0))
             elif api == "settings":
                 httplib.SendResponse(client, "application/json", open("settings.json","r").read())
             else:
