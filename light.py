@@ -69,15 +69,13 @@ def off():
 def timeout():
     global status
     settings = ujson.load(open("settings.json","r"))
-    delay_ms = 0
-
     if settings["Timeout"] == 0: return
+
+    timeout = time.time() + float(settings["Timeout"]*60)
     print("Thread timeout | ID: " + str(_thread.get_ident()))
 
-    # Timeout is in minutes
-    while delay_ms < (settings["Timeout"]*60*1000):
+    while timeout > time.time():
         time.sleep(0.1)
-        delay_ms += 100
         if status == "OFF": return
 
     _thread.start_new_thread(off,())
