@@ -46,6 +46,9 @@ while True:
         
         elif link == "/connection":
             httplib.SendResponse(client, "text/html", pages.connection())
+        
+        elif link == "/html/style.css":
+            httplib.SendResponse(client, "text/css", open("html/style.css","r").read())
 
         # API -------------------------------------------------------------------------------------
         elif "/api/" in link:
