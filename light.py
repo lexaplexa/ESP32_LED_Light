@@ -43,7 +43,7 @@ def on():
     status = "ON"
     current_on = time.time()
     _thread.start_new_thread(timeout,())        # Run timeout thread when light is put on
-    settings = ujson.load(open("settings.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
     print("Thread on | ID: " + str(_thread.get_ident()))
 
     while (value() < (1023*settings["Max"]/100) and status == "ON"):
@@ -57,7 +57,7 @@ def off():
     status = "OFF"
     previous_on += int(time.time() - current_on)
     current_on = 0
-    settings = ujson.load(open("settings.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
     print("Thread off | ID: " + str(_thread.get_ident()))
 
     while (value() > 0 and status == "OFF"):
@@ -66,7 +66,7 @@ def off():
 
 def timeout():
     global status
-    settings = ujson.load(open("settings.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
     if settings["Timeout"] == 0: return
 
     timeout = time.time() + float(settings["Timeout"]*60)
