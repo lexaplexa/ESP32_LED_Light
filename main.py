@@ -63,7 +63,7 @@ while True:
                         light.previous_on,
                         int(time.time() - light.current_on) if light.current_on > 0 else 0))
             elif api == "settings":
-                httplib.SendResponse(client, "application/json", open("settings.json","r").read())
+                httplib.SendResponse(client, "application/json", open("data/settings.json","r").read())
             else:
                 httplib.SendResponse(client, "application/json", """{"error":"not defined"}""")
 
@@ -84,7 +84,7 @@ while True:
             settings["Rise"] = int(settings["Rise"])
             settings["Fall"] = int(settings["Fall"])
             # Save to file
-            settings_file = open("settings.json","w")
+            settings_file = open("data/settings.json","w")
             ujson.dump(settings, settings_file)
             settings_file.close()
             
@@ -97,7 +97,7 @@ while True:
             for element in body: temp.extend(element.split("="))
             connection = {temp[i]:temp[i+1] for i in range(0,len(temp),2)}
             # Save to file
-            connection_file = open("connection.json","w")
+            connection_file = open("data/connection.json","w")
             ujson.dump(connection, connection_file)
             connection_file.close()
             

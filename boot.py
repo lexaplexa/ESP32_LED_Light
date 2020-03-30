@@ -4,7 +4,7 @@ gc.collect()
 import network
 import ujson
 
-connection = ujson.load(open("connection.json","r"))
+connection = ujson.load(open("data/connection.json","r"))
 
 if connection["WifiMode"] == "STATION":
 

@@ -34,7 +34,7 @@ style = """
 def index(light_status):
     # Load html file and settings first
     html = open("html/index.html","r").read()
-    settings = ujson.load(open("settings.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
 
     # Replace all values in brackets {} with real values
     html = replace_value(html, "room", settings["Name"])
@@ -50,7 +50,7 @@ def index(light_status):
 def settings():
     # Load html file and settings first
     html = open("html/settings.html","r").read()
-    settings = ujson.load(open("settings.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
 
     # Replace all values in brackets {} with real values
     html = replace_value(html, "room", settings["Name"])
@@ -66,8 +66,8 @@ def settings():
 def connection():
     # Load html file, settings and connection first
     html = open("html/connection.html","r").read()
-    settings = ujson.load(open("settings.json","r"))
-    connection = ujson.load(open("connection.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
+    connection = ujson.load(open("data/connection.json","r"))
 
     # Replace all values in brackets {} with real values
     html = replace_value(html, "room", settings["Name"])

@@ -7,9 +7,7 @@ import ujson
 status = "OFF"
 current_on = 0
 previous_on = 0
-pwm_pin = PWM(Pin(4))
-pwm_pin.freq(120)
-pwm_pin.duty(0)
+pwm_pin = PWM(Pin(4), freq=120, duty=0)
 switch_pin = Pin(5, Pin.IN, Pin.PULL_UP)
 
 def value(duty = None):
@@ -45,7 +43,7 @@ def on():
     status = "ON"
     current_on = time.time()
     _thread.start_new_thread(timeout,())        # Run timeout thread when light is put on
-    settings = ujson.load(open("settings.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
     print("Thread on | ID: " + str(_thread.get_ident()))
 
     while (value() < (1023*settings["Max"]/100) and status == "ON"):
@@ -59,7 +57,7 @@ def off():
     status = "OFF"
     previous_on += int(time.time() - current_on)
     current_on = 0
-    settings = ujson.load(open("settings.json","r"))
+    settings = ujson.load(open("data/settings.json","r"))
     print("Thread off | ID: " + str(_thread.get_ident()))
 
     while (value() > 0 and status == "OFF"):
@@ -68,16 +66,14 @@ def off():
 
 def timeout():
     global status
-    settings = ujson.load(open("settings.json","r"))
-    delay_ms = 0
-
+    settings = ujson.load(open("data/settings.json","r"))
     if settings["Timeout"] == 0: return
+
+    timeout = time.time() + float(settings["Timeout"]*60)
     print("Thread timeout | ID: " + str(_thread.get_ident()))
 
-    # Timeout is in minutes
-    while delay_ms < (settings["Timeout"]*60*1000):
+    while timeout > time.time():
         time.sleep(0.1)
-        delay_ms += 100
         if status == "OFF": return
 
     _thread.start_new_thread(off,())
