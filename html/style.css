@@ -23,4 +23,4 @@ select {font-size: 1em; width: 200px;}
 
 hr {color: white; max-width: 640px;}
 
-footer {color: white; bold;}
+footer {color: white; font-size: 0.9em; font-style: italic;}
