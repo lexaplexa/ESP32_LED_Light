@@ -18,6 +18,7 @@ server.listen(5)
 
 while True:
     client, addr = server.accept()
+    print("--------------------------------------------------------")
     print("Connected to "+str(addr[0])+":"+str(addr[1]))
     
     # Handle client request -----------------------------------------------------------------------
