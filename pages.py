@@ -10,6 +10,7 @@ def index(light_status):
 
     # Replace all values in brackets {} with real values
     html = replace_value(html, "room", settings["Name"])
+    html = replace_value(html, "style", open("html/style.css","r").read())
 
     if light_status == "OFF":
         html = replace_value(html, "class_div_light", "lightoff")
@@ -25,6 +26,7 @@ def settings():
 
     # Replace all values in brackets {} with real values
     html = replace_value(html, "room", settings["Name"])
+    html = replace_value(html, "style", open("html/style.css","r").read())
     html = replace_value(html, "settings_name", settings["Name"])
     html = replace_value(html, "settings_timeout", str(settings["Timeout"]))
     html = replace_value(html, "settings_max", str(settings["Max"]))
@@ -41,6 +43,7 @@ def connection():
 
     # Replace all values in brackets {} with real values
     html = replace_value(html, "room", settings["Name"])
+    html = replace_value(html, "style", open("html/style.css","r").read())
     html = replace_value(html, "connection_ssid", connection["ssid"])
 
     if connection["WifiMode"] == "STATION":
