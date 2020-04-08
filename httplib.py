@@ -170,12 +170,18 @@ class Request():
         # Check methods which sending content
         if self.method == "POST":
             content_type = self.get_header("Content-Type")
-            if content_type == "application/x-www-form-urlencoded":
+
+            if content_type in ["application/x-www-form-urlencoded"]:
                 content = data[1].split("&")
                 temp = []
                 for element in content: 
                     temp.extend(element.split("="))
                     self.content = {temp[i]:temp[i+1] for i in range(0,len(temp),2)}
+
+            elif content_type in ["application/json", "text/json"]:
+                import ujson
+                self.content = ujson.load(data[1])
+
             else:
                 self.content = data[1]
 
