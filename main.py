@@ -20,11 +20,12 @@ def index():
 def settings():
     settings = ujson.load(open("data/settings.json","r"))
     if app.request.method == "POST":
-        settings["Name"]    = app.request.content["Name"]
-        settings["Timeout"] = int(app.request.content["Timeout"])
-        settings["Max"]     = int(app.request.content["Max"])
-        settings["Rise"]    = int(app.request.content["Rise"])
-        settings["Fall"]    = int(app.request.content["Fall"])
+        settings = {}
+        for key in app.request.content.keys():
+            if app.request.content[key].isdigit():
+                settings.update({key:int(app.request.content[key])})
+            else:
+                settings.update({key:app.request.content[key]})
         settings_file = open("data/settings.json","w")
         ujson.dump(settings, settings_file)
         settings_file.close()
@@ -38,6 +39,31 @@ def settings():
         "settings_rise":    settings["Rise"],
         "settings_fall":    settings["Fall"]}
     return app.response.render_template("html/settings.html", elements)
+
+@app.route("/connection")
+def connection():
+    settings = ujson.load(open("data/settings.json","r"))
+    connection = ujson.load(open("data/connection.json","r"))
+    if app.request.method == "POST":
+        connection = {}
+        for key in app.request.content.keys():
+            connection.update({key:app.request.content[key]})
+        connection_file = open("data/connection.json","w")
+        ujson.dump(connection, connection_file)
+        connection_file.close()
+
+    elements = {
+        "style":            open("html/style.css","r").read(),
+        "room":             settings["Name"],
+        "connection_ssid":  connection["ssid"]}
+    if connection["WifiMode"] == "AP":
+        elements.update({"select_ap":"selected"})
+        elements.update({"select_st":""})
+    else:
+        elements.update({"select_ap":""})
+        elements.update({"select_st":"selected"})
+    return app.response.render_template("html/connection.html", elements)
+
 
 # Here starts application
 if __name__ == "__main__":
