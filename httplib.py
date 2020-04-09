@@ -1,3 +1,7 @@
+import usocket
+import sys
+import time
+
 request_methods = ["GET","HEAD","POST","PUT","DELETE","CONNECT","OPTIONS","TRACE","PATCH"]
 response_codes = {
         # 1×× Informational
@@ -75,11 +79,10 @@ class Http:
         self._route_functions = {}
         self.request = Request()
         self.response = Response()
+        self.debug_on = False
 
     def run(self, port = 80):
         self._port = port
-        import usocket
-        import sys
 
         # Create http server
         server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
@@ -92,7 +95,7 @@ class Http:
 
         while True:
             client, addr = server.accept()
-            print("["+str(addr[0])+":"+str(addr[1])+"]: Connected")
+            self._debug_msg(addr,"Connected")
 
             # When no data received, raise exception
             client.settimeout(0.2)
@@ -100,15 +103,15 @@ class Http:
                 data = client.recv(1024)
             except:
                 client.close()
-                print("["+str(addr[0])+":"+str(addr[1])+"]: No request. Disconnected")
+                self._debug_msg(addr,"No request. Disconnected")
                 continue
             
             # Parse received data
             self.request.parse(data)
-            print("["+str(addr[0])+":"+str(addr[1])+"]: Method:  " + self.request.method)
-            print("["+str(addr[0])+":"+str(addr[1])+"]: Url:     " + self.request.url)
-            print("["+str(addr[0])+":"+str(addr[1])+"]: Header:  " + str(self.request.headers))
-            print("["+str(addr[0])+":"+str(addr[1])+"]: Content: " + str(self.request.content))
+            self._debug_msg(addr, "Method:  " + self.request.method)
+            self._debug_msg(addr, "Url:     " + self.request.url)
+            self._debug_msg(addr, "Headers: " + str(self.request.headers))
+            self._debug_msg(addr, "Content: " + str(self.request.content))
 
             # Call routed funtion
             try:
@@ -116,20 +119,24 @@ class Http:
             except KeyError:
                 client.sendall("Unknown URL")
                 client.close()
-                print("["+str(addr[0])+":"+str(addr[1])+"]: Unknown url. Disconnected")
+                self._debug_msg(addr,"Unknown url. Disconnected")
                 continue
 
             # Send response
             client.sendall(self.response.create())
 
             client.close()
-            print("["+str(addr[0])+":"+str(addr[1])+"]: Disconnected")
+            self._debug_msg(addr, "Disconnected")
 
     def route(self, url):
         def wrap(f):
             self._route_functions[url] = f
             return f
         return wrap
+
+    def _debug_msg(self, address, message):
+        if self.debug_on:
+            print("[{:10d}|{}:{}]: {}".format(time.ticks_ms(), address[0], address[1], message))
 
 class Request():
     def __init__(self):

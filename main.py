@@ -41,4 +41,5 @@ def settings():
 
 # Here starts application
 if __name__ == "__main__":
+    app.debug_on = True
     app.run()
