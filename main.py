@@ -7,14 +7,14 @@ app = Http()
 @app.route("/")
 def index():
     settings = ujson.load(open("data/settings.json","r"))
-    elements = {"style": open("html/style.css","r").read(),"room":settings["Name"]}
+    settings.update({"style":open("html/style.css","r").read()})
 
     if light.status == "ON":
-        elements.update({"class_div_light":"lighton"})
+        settings.update({"class_div_light":"lighton"})
     else:
-        elements.update({"class_div_light":"lightoff"})
+        settings.update({"class_div_light":"lightoff"})
 
-    return app.response.render_template("html/index.html", elements)
+    return app.response.render_template("html/index.html", settings)
 
 @app.route("/settings")
 def settings():
@@ -30,15 +30,8 @@ def settings():
         ujson.dump(settings, settings_file)
         settings_file.close()
 
-    elements = {
-        "style":            open("html/style.css","r").read(),
-        "room":             settings["Name"],
-        "settings_name":    settings["Name"],
-        "settings_timeout": settings["Timeout"],
-        "settings_max":     settings["Max"],
-        "settings_rise":    settings["Rise"],
-        "settings_fall":    settings["Fall"]}
-    return app.response.render_template("html/settings.html", elements)
+    settings.update({"style":open("html/style.css","r").read()})
+    return app.response.render_template("html/settings.html", settings)
 
 @app.route("/connection")
 def connection():
@@ -52,16 +45,16 @@ def connection():
         ujson.dump(connection, connection_file)
         connection_file.close()
 
-    elements = {
-        "style":            open("html/style.css","r").read(),
-        "room":             settings["Name"],
-        "connection_ssid":  connection["ssid"]}
-    if connection["WifiMode"] == "AP":
-        elements.update({"select_ap":"selected"})
-        elements.update({"select_st":""})
+    elements = {}
+    elements.update(settings)
+    elements.update(connection)
+    if connection["connection_wifimode"] == "AP":
+        elements.update({"connection_select_ap":"selected"})
+        elements.update({"connection_select_st":""})
     else:
-        elements.update({"select_ap":""})
-        elements.update({"select_st":"selected"})
+        elements.update({"connection_select_ap":""})
+        elements.update({"connection_select_st":"selected"})
+    elements.update({"style":open("html/style.css","r").read()})
     return app.response.render_template("html/connection.html", elements)
 
 

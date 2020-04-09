@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Světlo | {room}</title>
+    <title>Světlo | {settings_room}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <style>
         {style}
@@ -9,24 +9,24 @@
 <body>
     <a href="/">
         <div class="title">
-            <h1>Světlo | {room}</h1>
+            <h1>Světlo | {settings_room}</h1>
         </div>
     </a>
     <form name="connection" action="/connection" method="post">
         <div>
             Mód WIFI<br><br>
-            <select name="WifiMode">
-                <option value="AP" {select_ap}>AP</option>
-                <option value="STATION" {select_st}>STATION</option>
+            <select name="connection_wifimode">
+                <option value="AP" {connection_select_ap}>AP</option>
+                <option value="STATION" {connection_select_st}>STATION</option>
             </select>
         </div>
         <div>
             SSID<br><br>
-            <input name="ssid" type="Text" value={connection_ssid} class="name">
+            <input name="connection_ssid" type="Text" value={connection_ssid} class="name">
         </div>
         <div>
             Heslo<br><br>
-            <input name="password" type="password" class="name">
+            <input name="connection_password" type="password" class="name">
         </div>
         <div class="buttons">
             <input type="submit" value="Uložit" class="submit">
