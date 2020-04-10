@@ -1,40 +1,40 @@
 <html>
 <head>
-    <title>Světlo | {settings_room}</title>
+    <title>Světlo | {{settings_room}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <style>
-        {style}
+        {{style}}
     </style>
 </head>
 <body>
     <a href="/">
         <div class="title">
-            <h1>Světlo | {settings_room}</h1>
+            <h1>Světlo | {{settings_room}}</h1>
         </div>
     </a>
     <form name="settings" action="/settings" method="post">
         <div>
             Jméno<br><br>
-            <input name="settings_room" type="Text" value={settings_room} class="name">
+            <input name="settings_room" type="Text" value={{settings_room}} class="name">
         </div>
         <div>
             Automatické zhasnutí<br><br>
-            <input name="settings_timeout" type="Number" value={settings_timeout} class="timeout"> minut
+            <input name="settings_timeout" type="Number" value={{settings_timeout}} class="timeout"> minut
         </div>
         <div>
             Jas
             <p><span id="MaxSliderVal"></span>%</p>
-            <input id="MaxSlider" name="settings_max" type="range" min=1 max=100 value={settings_max} class="slider">
+            <input id="MaxSlider" name="settings_max" type="range" min=1 max=100 value={{settings_max}} class="slider">
         </div>
         <div>
             Doba zapínání
             <p><span id="RiseSliderVal"></span></p>
-            <input id="RiseSlider" name="settings_rise" type="range" min=1 max=20 value={settings_rise} class="slider">
+            <input id="RiseSlider" name="settings_rise" type="range" min=1 max=20 value={{settings_rise}} class="slider">
         </div>
         <div>
             Doba vypínání
             <p><span id="FallSliderVal"></span></p>
-            <input id="FallSlider" name="settings_fall" type="range" min=1 max=20 value={settings_fall} class="slider">
+            <input id="FallSlider" name="settings_fall" type="range" min=1 max=20 value={{settings_fall}} class="slider">
         </div>
         <div class="buttons">
             <input type="submit" value="Uložit" class="submit">

@@ -237,9 +237,9 @@ class Response():
         except FileNotFoundError:
             return ""
         
-        body = page.read()
+        template = page.read()
 
         for key in elements.keys():
-            body = body.replace("{" + key + "}", str(elements[key]))
+            template = template.replace("{{" + key + "}}", str(elements[key]))
 
-        return body
+        return template
