@@ -87,9 +87,9 @@ class Http:
         # Create http server
         server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
         try:
-            server.bind(('', port))
+            server.bind(('', self._port))
         except:
-            print('# Bind failed. ')
+            self._debug_msg(["localhost",self._port],"Bind failed.")
             sys.exit()
         server.listen(5)
 
@@ -116,10 +116,10 @@ class Http:
             # Call routed funtion
             try:
                 self.response.body = self._route_functions[self.request.url]()
-            except KeyError:
-                client.sendall("Unknown URL")
+            except KeyError as err:
+                client.sendall(self.response.error(self.request, "Unknown URL", str(err)))
                 client.close()
-                self._debug_msg(addr,"Unknown url. Disconnected")
+                self._debug_msg(addr,"Unknown url. Disconnected. ERROR: "+ str(err))
                 continue
 
             # Send response
@@ -217,7 +217,7 @@ class Response():
     
     def set_header(self, name, value):
         self.headers.update({name:value})
-    
+
     def create(self):
         # Status line
         response = "HTTP/1.1 " + str(self.code) + " " + str(response_codes[self.code]) + "\r\n"
@@ -243,3 +243,37 @@ class Response():
             template = template.replace("{{" + key + "}}", str(elements[key]))
 
         return template
+
+    def error(self, request, errorname, message):
+        self.body = """
+        <style>
+            div {background-color: rgb(255, 144, 144); border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto; font-size: 1em; text-align: center}
+            .message {background-color: rgb(144, 144, 144);}
+            table {border-collapse: collapse; width: 100%;}
+            td, th {border: 1px solid; text-align: left; padding: 4px;}
+            .value {font-style: italic;}
+        </style>
+        <div>
+            <H2> ERROR: """ + errorname + """</H2>
+        </div>
+        <div class="message">
+            <table>
+                <tr>
+                    <th>Method</th>
+                    <th class="value">"""+ request.method +"""</th>
+                </tr>
+                <tr>
+                    <th>URL</th>
+                    <th class="value">"""+ request.url +"""</th>
+                </tr>
+                <tr>
+                    <th>Content</th>
+                    <th class="value">"""+ str(request.content) +"""</th>
+                </tr>
+                <tr>
+                    <th>Error message</th>
+                    <th class="value">"""+ message +"""</th>
+                </tr>
+        </div>
+        """
+        return self.create()
