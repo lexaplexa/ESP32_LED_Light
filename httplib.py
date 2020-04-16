@@ -110,12 +110,13 @@ class Http:
             self.request.parse(data)
             self._debug_msg(addr, "Method:  " + self.request.method)
             self._debug_msg(addr, "Url:     " + self.request.url)
+            self._debug_msg(addr, "Query:   " + str(self.request.query))
             self._debug_msg(addr, "Headers: " + str(self.request.headers))
             self._debug_msg(addr, "Content: " + str(self.request.content))
 
             # Call routed funtion
             try:
-                self.response.body = self._route_functions[self.request.url]()
+                self.response.body = self._route_functions[self.request.url](**self.request.query)
             except KeyError as err:
                 client.sendall(self.response.error(self.request, "Unknown URL", str(err)))
                 client.close()
@@ -145,6 +146,7 @@ class Request():
         self.version = ""
         self.headers = {}
         self.content = ""
+        self.query = {}
 
     def parse(self, data):
         # Set to default
@@ -153,6 +155,7 @@ class Request():
         self.version = ""
         self.headers = {}
         self.content = ""
+        self.query = {}
 
         # Convert UTF-8 characters to bytes
         data = self._convert_request_utf8(data)
@@ -168,6 +171,16 @@ class Request():
             self.method, self.url, self.version = rows[0].split()
         except:
             return
+
+        # URL Query
+        if "?" in self.url:
+            temp = self.url.split("?")
+            self.url = temp[0]              # url without query
+            queries = temp[1].split("&")    # queries
+            
+            for query in queries:
+                key, value = query.split("=")
+                self.query.update({key:value})
 
         # Create a dictionary from remaining rows
         for header in rows[1:]: 
