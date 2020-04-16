@@ -1,14 +1,22 @@
 from httplib import Http
 import ujson
 import light
+import _thread
 
 app = Http()
 
 @app.route("/")
-def index():
+def index(status = ""):
     settings = ujson.load(open("data/settings.json","r"))
     settings.update({"style":open("html/style.css","r").read()})
 
+    if status == "on":
+        light.status = "ON"
+        _thread.start_new_thread(light.on, ())
+    elif status == "off":
+        light.status = "OFF"
+        _thread.start_new_thread(light.off, ())
+    
     if light.status == "ON":
         settings.update({"class_div_light":"lighton"})
     else:
