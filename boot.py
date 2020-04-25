@@ -20,8 +20,8 @@ if connection["connection_wifimode"] == "STATION":
 
 else:
     ap = network.WLAN(network.AP_IF)
-    ap.config(essid=connection["connection_ssid"])
     ap.active(True)
+    ap.config(essid=connection["connection_ssid"], password=connection["connection_password"])
     
     print("AP established")
     print (ap.ifconfig())
