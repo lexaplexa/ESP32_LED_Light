@@ -1,6 +1,7 @@
 import usocket
 import sys
 import time
+import gc
 
 request_methods = ["GET","HEAD","POST","PUT","DELETE","CONNECT","OPTIONS","TRACE","PATCH"]
 response_codes = {
@@ -98,7 +99,7 @@ class Http:
             self._debug_msg(addr,"Connected")
 
             # When no data received, raise exception
-            client.settimeout(0.2)
+            client.settimeout(0.5)
             try:
                 data = client.recv(1024)
             except:
@@ -125,9 +126,12 @@ class Http:
 
             # Send response
             client.sendall(self.response.create())
-
             client.close()
             self._debug_msg(addr, "Disconnected")
+
+            # Set headers to default
+            self.response.headers = {"Content-Type":"text/html"}
+            gc.collect()
 
     def route(self, url):
         def wrap(f):
@@ -258,6 +262,7 @@ class Response():
         return template
 
     def error(self, request, errorname, message):
+        self.code = 404
         self.body = """
         <style>
             div {background-color: rgb(255, 144, 144); border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto; font-size: 1em; text-align: center}
