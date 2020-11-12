@@ -2,6 +2,7 @@ from httplib import Http
 import ujson
 import light
 import _thread
+import ubinascii
 
 app = Http()
 
@@ -9,6 +10,7 @@ app = Http()
 def index(status = ""):
     settings = ujson.load(open("data/settings.json","r"))
     settings.update({"style":open("html/style.css","r").read()})
+    settings.update({"img_power_button": ubinascii.b2a_base64(open("/img/power-button.png").read()).decode("utf-8")})
 
     if status == "on":
         light.status = "ON"
@@ -19,8 +21,10 @@ def index(status = ""):
     
     if light.status == "ON":
         settings.update({"class_div_light":"lighton"})
+        settings.update({"status_query":"/?status=off"})
     else:
         settings.update({"class_div_light":"lightoff"})
+        settings.update({"status_query":"/?status=on"})
 
     return app.response.render_template("html/index.html", settings)
 
