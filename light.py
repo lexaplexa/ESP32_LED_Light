@@ -1,4 +1,3 @@
-import machine
 from machine import Pin, PWM
 import time
 import _thread
@@ -8,7 +7,7 @@ status = "OFF"
 current_on = 0
 previous_on = 0
 pwm_pin = PWM(Pin(4), freq=120, duty=0)
-switch_pin = Pin(5, Pin.IN, Pin.PULL_UP)
+switch_pin = Pin(12, Pin.IN, Pin.PULL_UP)
 
 def value(duty = None):
     if duty == None:
@@ -46,8 +45,8 @@ def on():
     settings = ujson.load(open("data/settings.json","r"))
     print("Thread on | ID: " + str(_thread.get_ident()))
 
-    while (value() < (1023*settings["Max"]/100) and status == "ON"):
-        add(int(value()/settings["Rise"]/10)+1)
+    while (value() < (1023*settings["settings_max"]/100) and status == "ON"):
+        add(int(value()/settings["settings_rise"]/10)+1)
         time.sleep(0.01)
 
 def off():
@@ -61,15 +60,15 @@ def off():
     print("Thread off | ID: " + str(_thread.get_ident()))
 
     while (value() > 0 and status == "OFF"):
-        add(-(int(value()/settings["Fall"]/10)+1))
+        add(-(int(value()/settings["settings_fall"]/10)+1))
         time.sleep(0.01)
 
 def timeout():
     global status
     settings = ujson.load(open("data/settings.json","r"))
-    if settings["Timeout"] == 0: return
+    if settings["settings_timeout"] == 0: return
 
-    timeout = time.time() + float(settings["Timeout"]*60)
+    timeout = time.time() + float(settings["settings_timeout"]*60)
     print("Thread timeout | ID: " + str(_thread.get_ident()))
 
     while timeout > time.time():

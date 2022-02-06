@@ -1,1 +1,1 @@
-{"Name": "Room", "Max": 100, "Timeout": 1, "Rise": 20, "Fall": 1}
+{"settings_room": "Room", "settings_max": 100, "settings_timeout": 1, "settings_rise": 20, "settings_fall": 1}

@@ -1,26 +1,22 @@
-html{background-color: black; font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
+html{background-color: darkgray; font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
 
 a:link, a:visited, a:active, a:hover {text-decoration: none; color: white;}
 
-button {display: inline-block; border: 1px; border-radius: 4px; border-style: solid; padding: 16px 40px; text-decoration: none; font-weight:bold; font-size: 1em; margin: 5px; cursor: pointer;}
-.on {background-color: orange; color: white;}
-.off {background-color: gray; color: black;}
-.settings {background-color: lightblue; color: white;}
+button, input.submit {background-color: lightblue; display: inline-block; border: 1px; border-radius: 4px; border-style: solid; padding: 16px 40px; text-decoration: none; font-weight:bold; font-size: 1em; margin: 5px; cursor: pointer;}
 
 input {text-align: center; font-size: 1em;}
 .slider {-webkit-appearance: none; width: 60%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none;}
 .name {width: 200px;}
 .timeout {width: 80px;}
-.submit {background-color: lightblue; border: 1px; border-radius: 4px; border-style: solid; color: white; padding: 16px 40px; text-decoration: none; margin: 5px; cursor: pointer; font-weight:bold;}
 
-div {background-color: #EAEAEA; border: 1px; border-radius: 4px; max-width: 600px; padding: 20px; margin: 10px auto; font-size: 1.5em;}
-.title {background-color: green; font-size: 1em;}
-.lighton {background-color: orange; color: white;}
-.lightoff {background-color: gray; color: black;}
+div {background-color: #EAEAEA; border: 1px; border-radius: 4px; max-width: 400px; padding: 20px; margin: 10px auto; font-size: 1.5em; box-shadow: 3px 3px 10px 5px;}
+.title {font-size: 1em; color: black;}
+.lighton {background-color: orange; border-radius: 50%; max-width: 100px; height: 100px; line-height: 100px;}
+.lightoff {background-color: gray; border-radius: 50%; max-width: 100px; height: 100px; line-height: 100px;}
 .buttons {display: flex; justify-content: center;}
 
 select {font-size: 1em; width: 200px;}
 
-hr {color: white; max-width: 640px;}
+hr {color: white; max-width: 440px;}
 
 footer {color: white; font-size: 0.9em; font-style: italic;}

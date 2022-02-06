@@ -1,118 +1,99 @@
-import usocket
-import sys
-import httplib
-import light
-import pages
-import _thread
+from httplib import Http
 import ujson
-import time
+import light
+import _thread
+import ubinascii
+import network
 
-# Create web server
-server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
-try:
-    server.bind(('', 80))
-except:
-    print('# Bind failed. ')
-    sys.exit()
-server.listen(5)
+app = Http()
 
-while True:
-    client, addr = server.accept()
-    print("--------------------------------------------------------")
-    print("Connected to "+str(addr[0])+":"+str(addr[1]))
+@app.route("/")
+def index(status = ""):
+    settings = ujson.load(open("data/settings.json","r"))
+    settings.update({"style":open("html/style.css","r").read()})
+    settings.update({"img_power_button": ubinascii.b2a_base64(open("/img/power-button.png").read()).decode("utf-8")})
+
+    if status == "on":
+        light.status = "ON"
+        _thread.start_new_thread(light.on, ())
+    elif status == "off":
+        light.status = "OFF"
+        _thread.start_new_thread(light.off, ())
     
-    # Handle client request -----------------------------------------------------------------------
-    try:
-        method, link, body = httplib.GetRequest(client)
-    except:
-        client.close()
-        print("Client disconnected")
-        continue
+    if light.status == "ON":
+        settings.update({"class_div_light":"lighton"})
+        settings.update({"status_query":"/?status=off"})
+    else:
+        settings.update({"class_div_light":"lightoff"})
+        settings.update({"status_query":"/?status=on"})
 
-    # GET method ----------------------------------------------------------------------------------
-    if method == "GET":
-        if link == "/":
-            httplib.SendResponse(client, "text/html", pages.index(light.status))
+    return app.response.render_template("html/index.html", settings)
 
-        elif link == "/?led=on":
-            _thread.start_new_thread(light.on,())
-            httplib.SendResponse(client, "text/html", pages.index("ON"))
-        
-        elif link == "/?led=off":
-            _thread.start_new_thread(light.off,())
-            httplib.SendResponse(client, "text/html", pages.index("OFF"))
-
-        elif link == "/settings":
-            httplib.SendResponse(client, "text/html", pages.settings())
-        
-        elif link == "/connection":
-            httplib.SendResponse(client, "text/html", pages.connection())
-        
-        elif link == "/html/style.css":
-            httplib.SendResponse(client, "text/css", open("html/style.css","r").read())
-
-        # API -------------------------------------------------------------------------------------
-        elif "/api/" in link:
-            api = link.split("/api/")[1]
-            if api == "ledon":
-                _thread.start_new_thread(light.on, ())
-                httplib.SendResponse(client, "application/json", """{"status":"ON"}""")
-            elif api == "ledoff":
-                _thread.start_new_thread(light.off, ())
-                httplib.SendResponse(client, "application/json", """{"status":"OFF"}""")
-            elif api == "status":
-                httplib.SendResponse(client, "application/json", 
-                    "{{\"status\":\"{}\",\"previous_on\":{}, \"current_on\":{}}}".format(
-                        light.status,
-                        light.previous_on,
-                        int(time.time() - light.current_on) if light.current_on > 0 else 0))
-            elif api == "settings":
-                httplib.SendResponse(client, "application/json", open("data/settings.json","r").read())
+@app.route("/settings")
+def settings():
+    settings = ujson.load(open("data/settings.json","r"))
+    if app.request.method == "POST":
+        settings = {}
+        for key in app.request.content.keys():
+            if app.request.content[key].isdigit():
+                settings.update({key:int(app.request.content[key])})
             else:
-                httplib.SendResponse(client, "application/json", """{"error":"not defined"}""")
+                settings.update({key:app.request.content[key]})
+        settings_file = open("data/settings.json","w")
+        ujson.dump(settings, settings_file)
+        settings_file.close()
 
-        else:
-            httplib.SendError(client, 404,"Not found")
+    settings.update({"style":open("html/style.css","r").read()})
+    return app.response.render_template("html/settings.html", settings)
 
-    # POST method ---------------------------------------------------------------------------------
-    elif method == "POST":
-        if link == "/settings":
-            # Split body to dictionary
-            body = body.split("&")
-            temp = []
-            for element in body: temp.extend(element.split("="))
-            settings = {temp[i]:temp[i+1] for i in range(0,len(temp),2)}
-            # Convert to integer
-            settings["Max"] = int(settings["Max"])
-            settings["Timeout"] = int(settings["Timeout"])
-            settings["Rise"] = int(settings["Rise"])
-            settings["Fall"] = int(settings["Fall"])
-            # Save to file
-            settings_file = open("data/settings.json","w")
-            ujson.dump(settings, settings_file)
-            settings_file.close()
-            
-            httplib.SendResponse(client, "text/html", pages.settings())
+@app.route("/connection")
+def connection():
+    settings = ujson.load(open("data/settings.json","r"))
+    connection = ujson.load(open("data/connection.json","r"))
+    if app.request.method == "POST":
+        connection = {}
+        for key in app.request.content.keys():
+            connection.update({key:app.request.content[key]})
+        connection_file = open("data/connection.json","w")
+        ujson.dump(connection, connection_file)
+        connection_file.close()
+
+    elements = {}
+    elements.update(settings)
+    elements.update(connection)
+    if connection["connection_wifimode"] == "AP":
+        elements.update({"connection_select_ap":"selected"})
+        elements.update({"connection_select_st":""})
+    else:
+        elements.update({"connection_select_ap":""})
+        elements.update({"connection_select_st":"selected"})
+    elements.update({"style":open("html/style.css","r").read()})
+    return app.response.render_template("html/connection.html", elements)
+
+
+# Here starts application
+if __name__ == "__main__":
+    connection = ujson.load(open("data/connection.json","r"))
+
+    if connection["connection_wifimode"] == "STATION":
+
+        st = network.WLAN(network.STA_IF)
+        st.active(True)
+        st.connect(connection["connection_ssid"], connection["connection_password"])
+
+        while st.isconnected() == False:
+            pass
         
-        elif link == "/connection":
-            # Split body to dictionary
-            body = body.split("&")
-            temp = []
-            for element in body: temp.extend(element.split("="))
-            connection = {temp[i]:temp[i+1] for i in range(0,len(temp),2)}
-            # Save to file
-            connection_file = open("data/connection.json","w")
-            ujson.dump(connection, connection_file)
-            connection_file.close()
-            
-            httplib.SendResponse(client, "text/html", pages.connection())
+        print("Connected to " + connection["connection_ssid"])
+        print(st.ifconfig())
 
-        # API -------------------------------------------------------------------------------------
-        elif "/api/" in link:
-            api = link.split("/api/")[1]
-            httplib.SendResponse(client, "application/json", """{"error":"not defined"}""")
+    else:
+        ap = network.WLAN(network.AP_IF)
+        ap.active(True)
+        ap.config(essid=connection["connection_ssid"], password=connection["connection_password"])
         
-        else:
-            httplib.SendError(client, 404,"Not found")
-
-    client.close()
+        print("AP established")
+        print (ap.ifconfig())
+        
+    app.debug_on = True
+    app.run()
