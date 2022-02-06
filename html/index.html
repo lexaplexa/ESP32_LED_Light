@@ -12,10 +12,12 @@
             <h1>Světlo | {{settings_room}}</h1>
         </div>
     </a>
-    <div class={{class_div_light}}>
-        <a href="/?status=on"><button class="on">Rožni</button></a>
-        <a href="/?status=off"><button class="off">Zhasni</button></a>
-    </div>
+    <a href="{{status_query}}">
+        <div class={{class_div_light}}>
+            <img src="data:image/png;base64,{{img_power_button}}" height="100px" width="100px">
+        </div>
+    </a>
+    
     <div class="buttons">
         <a href="/settings"><button class="settings">Parametry</button></a>
         <a href="/connection"><button class="settings">Wifi</button></a>
