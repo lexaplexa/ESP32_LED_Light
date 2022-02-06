@@ -1,4 +1,3 @@
-import machine
 from machine import Pin, PWM
 import time
 import _thread
@@ -8,7 +7,7 @@ status = "OFF"
 current_on = 0
 previous_on = 0
 pwm_pin = PWM(Pin(4), freq=120, duty=0)
-switch_pin = Pin(5, Pin.IN, Pin.PULL_UP)
+switch_pin = Pin(12, Pin.IN, Pin.PULL_UP)
 
 def value(duty = None):
     if duty == None:
