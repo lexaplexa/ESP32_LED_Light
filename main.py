@@ -22,8 +22,10 @@ def index(status = ""):
     
     if light.status == "ON":
         settings.update({"class_div_light":"lighton"})
+        settings.update({"status_query":"/?status=off"})
     else:
         settings.update({"class_div_light":"lightoff"})
+        settings.update({"status_query":"/?status=on"})
 
     return app.response.render_template("html/index.html", settings)
 
